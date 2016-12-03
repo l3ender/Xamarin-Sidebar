@@ -1,7 +1,7 @@
-﻿using System;
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using System;
+using CoreGraphics;
+using Foundation;
+using UIKit;
 
 namespace NavigationSample
 {
@@ -16,13 +16,13 @@ namespace NavigationSample
 			base.ViewDidLoad();
 			View.BackgroundColor = UIColor.White;
 
-			var title = new UILabel(new RectangleF(0, 80, 320, 30));
+			var title = new UILabel(new CGRect(0, 80, 320, 30));
 			title.Font = UIFont.SystemFontOfSize(24.0f);
 			title.TextAlignment = UITextAlignment.Center;
 			title.TextColor = UIColor.Blue;
 			title.Text = "Sidebar Navigation";
 
-			var body = new UILabel(new RectangleF(50, 120, 220, 100));
+			var body = new UILabel(new CGRect(50, 120, 220, 100));
 			body.Font = UIFont.SystemFontOfSize(12.0f);
 			body.TextAlignment = UITextAlignment.Center;
 			body.Lines = 0;

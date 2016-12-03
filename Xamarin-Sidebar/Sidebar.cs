@@ -9,6 +9,7 @@ using CoreGraphics;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using PointF = CoreGraphics.CGPoint;
+
 #else
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
@@ -40,16 +41,16 @@ namespace SidebarNavigation
 		private SidebarMenuArea _sidebarMenuArea;
 
 
-		public Sidebar(
+		public Sidebar (
 			UIViewController rootViewController,
 			UIViewController contentViewController,
 			UIViewController menuViewController) 
 		{
-			_sidebarContentArea = new SidebarContentArea(contentViewController);
-			_sidebarMenuArea = new SidebarMenuArea(menuViewController);
+			_sidebarContentArea = new SidebarContentArea (contentViewController);
+			_sidebarMenuArea = new SidebarMenuArea (menuViewController);
 
-			SetDefaults();
-			SetupGestureRecognizers();
+			SetDefaults ();
+			SetupGestureRecognizers ();
 		}
 
 
@@ -62,7 +63,7 @@ namespace SidebarNavigation
 			get { return _sidebarMenuArea.MenuViewController; } 
 			set { _sidebarMenuArea.MenuViewController = value; }
 		}
-			
+
 		public bool IsOpen {
 			get {
 				return _isOpen;
@@ -70,7 +71,7 @@ namespace SidebarNavigation
 			set {
 				_isOpen = value;
 				if (StateChangeHandler != null) {
-					StateChangeHandler.Invoke(this, _isOpen);
+					StateChangeHandler.Invoke (this, _isOpen);
 				}
 			}
 		}
@@ -113,94 +114,101 @@ namespace SidebarNavigation
 		public event EventHandler<bool> StateChangeHandler;
 
 
-		public void OpenMenu()
+		public void OpenMenu ()
 		{
 			if (IsOpen || Disabled)
 				return;
-			ShowShadow();
-			_sidebarContentArea.BeforeOpenAnimation();
-			UIView.Animate(
+			ShowShadow ();
+			_sidebarContentArea.BeforeOpenAnimation ();
+			UIView.Animate (
 				Sidebar.SlideSpeed, 
 				0, 
 				UIViewAnimationOptions.CurveEaseInOut,
-				() => { _sidebarContentArea.OpenAnimation(MenuLocation, MenuWidth); },
 				() => {
-					_sidebarContentArea.AfterOpenAnimation(TapGesture);
+					_sidebarContentArea.OpenAnimation (MenuLocation, MenuWidth); },
+				() => {
+					_sidebarContentArea.AfterOpenAnimation (TapGesture);
 					IsOpen = true;
 				});
 		}
 
-		public void CloseMenu(bool animate = true)
+		public void CloseMenu (bool animate = true)
 		{
 			if (!IsOpen || Disabled)
 				return;
-			MenuViewController.View.EndEditing(true);
-			UIView.Animate(
+			MenuViewController.View.EndEditing (true);
+			UIView.Animate (
 				animate ? Sidebar.SlideSpeed : 0, 
 				0, 
 				UIViewAnimationOptions.CurveEaseInOut, 
-				() => { _sidebarContentArea.CloseAnimation(); }, 
 				() => {
-					_sidebarContentArea.AfterCloseAnimation(TapGesture);
+					_sidebarContentArea.CloseAnimation (); }, 
+				() => {
+					_sidebarContentArea.AfterCloseAnimation (TapGesture);
 					IsOpen = false;
 				});
-			HideShadow();
+			HideShadow ();
 		}
 
-		public void ChangeContentView(UIViewController newContentView) {
-			RemoveContentView();
+		public void ChangeContentView (UIViewController newContentView)
+		{
+			RemoveContentView ();
 			ContentViewController = newContentView;
-			ContentViewController.View.AddGestureRecognizer(PanGesture);
+			ContentViewController.View.AddGestureRecognizer (PanGesture);
 		}
 
-		public void ChangeMenuView(UIViewController newMenuView) {
-			RemoveMenuView();
+		public void ChangeMenuView (UIViewController newMenuView)
+		{
+			RemoveMenuView ();
 			MenuViewController = newMenuView;
 		}
 
-		public void Pan() {
-			_sidebarContentArea.Pan(this);
+		public void Pan ()
+		{
+			_sidebarContentArea.Pan (this);
 		}
-			
 
-		private void RemoveContentView() {
-			if (ContentViewController.View != null)
-			{
-				ContentViewController.View.RemoveFromSuperview();
+
+		private void RemoveContentView ()
+		{
+			if (ContentViewController.View != null) {
+				ContentViewController.View.RemoveFromSuperview ();
 				if (TapGesture != null && IsOpen)
 					ContentViewController.View.RemoveGestureRecognizer (TapGesture);
 				if (PanGesture != null)
 					ContentViewController.View.RemoveGestureRecognizer (PanGesture); 
 			}
 			if (ContentViewController != null)
-				ContentViewController.RemoveFromParentViewController();
+				ContentViewController.RemoveFromParentViewController ();
 		}
 
-		private void RemoveMenuView() {
+		private void RemoveMenuView ()
+		{
 			if (MenuViewController.View != null)
-				MenuViewController.View.RemoveFromSuperview();
+				MenuViewController.View.RemoveFromSuperview ();
 			if (MenuViewController != null)
-				MenuViewController.RemoveFromParentViewController();
+				MenuViewController.RemoveFromParentViewController ();
 		}
 
-		private void ShowShadow()
+		private void ShowShadow ()
 		{
 			if (!HasShadowing || _shadowShown)
 				return;
 			var position = (MenuLocation == MenuLocations.Left) ? -5 : 5;
-			_sidebarContentArea.DisplayShadow(position);
+			_sidebarContentArea.DisplayShadow (position);
 			_shadowShown = true;
 		}
 
-		private void HideShadow()
+		private void HideShadow ()
 		{
 			if (!HasShadowing || !_shadowShown)
 				return;
-			_sidebarContentArea.HideShadow();
+			_sidebarContentArea.HideShadow ();
 			_shadowShown = false;
 		}
 
-		private void SetDefaults() {
+		private void SetDefaults ()
+		{
 			FlingPercentage = Sidebar.DefaultFlingPercentage;
 			FlingVelocity = Sidebar.DefaultFlingVelocity;
 			GestureActiveArea = Sidebar.DefaultGestureActiveArea;
@@ -210,16 +218,17 @@ namespace SidebarNavigation
 			ReopenOnRotate = true;
 		}
 
-		private void SetupGestureRecognizers() {
+		private void SetupGestureRecognizers ()
+		{
 			TapGesture = new UITapGestureRecognizer ();
-			TapGesture.AddTarget (() => CloseMenu());
+			TapGesture.AddTarget (() => CloseMenu ());
 			TapGesture.NumberOfTapsRequired = 1;
 			PanGesture = new UIPanGestureRecognizer {
-				Delegate = new SlideoutPanDelegate(),
+				Delegate = new SlideoutPanDelegate (),
 				MaximumNumberOfTouches = 1,
 				MinimumNumberOfTouches = 1
 			};
-			PanGesture.AddTarget(() => Pan());
+			PanGesture.AddTarget (() => Pan ());
 		}
 
 

@@ -1,7 +1,7 @@
 using System;
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using CoreGraphics;
+using Foundation;
+using UIKit;
 
 namespace NavigationSample
 {
@@ -13,19 +13,19 @@ namespace NavigationSample
 		// the navigation controller
 		public NavController NavController { get; private set; }
 
-		public RootViewController() : base(null, null)
+		public RootViewController () : base (null, null)
 		{
 
 		}
 
-		public override void ViewDidLoad()
+		public override void ViewDidLoad ()
 		{
-			base.ViewDidLoad();
+			base.ViewDidLoad ();
 
 			// create a slideout navigation controller with the top navigation controller and the menu view controller
-			NavController = new NavController();
-			NavController.PushViewController(new IntroController(), false);
-			SidebarController = new SidebarNavigation.SidebarController(this, NavController, new SideMenuController());
+			NavController = new NavController ();
+			NavController.PushViewController (new IntroController (), false);
+			SidebarController = new SidebarNavigation.SidebarController (this, NavController, new SideMenuController ());
 			SidebarController.MenuWidth = 220;
 			SidebarController.ReopenOnRotate = false;
 		}

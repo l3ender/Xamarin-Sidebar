@@ -9,6 +9,7 @@ using CoreGraphics;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using PointF = CoreGraphics.CGPoint;
+
 #else
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
@@ -21,7 +22,8 @@ using nuint = global::System.UInt32;
 
 namespace SidebarNavigation
 {
-	public class SidebarController : UIViewController {
+	public class SidebarController : UIViewController
+	{
 
 		private Sidebar _sidebar;
 
@@ -29,7 +31,7 @@ namespace SidebarNavigation
 		/// <summary>
 		/// Required contructor.
 		/// </summary>
-		public SidebarController(IntPtr handle) : base(handle)
+		public SidebarController (IntPtr handle) : base (handle)
 		{
 		}
 
@@ -45,22 +47,22 @@ namespace SidebarNavigation
 		/// <param name="navigationViewController">
 		/// The view controller for the side menu.
 		/// </param>
-		public SidebarController(
-			UIViewController rootViewController, 
-			UIViewController contentViewController, 
+		public SidebarController (
+			UIViewController rootViewController,
+			UIViewController contentViewController,
 			UIViewController menuViewController)
 		{
-			_sidebar = new Sidebar(rootViewController, contentViewController, menuViewController);
+			_sidebar = new Sidebar (rootViewController, contentViewController, menuViewController);
 
-			_sidebar.StateChangeHandler += (sender, e) => { 
+			_sidebar.StateChangeHandler += (sender, e) => {
 				if (StateChangeHandler != null)
-					StateChangeHandler.Invoke(sender, e); 
+					StateChangeHandler.Invoke (sender, e);
 			};
 
-			ChangeMenuView(menuViewController);
-			ChangeContentView(contentViewController);
+			ChangeMenuView (menuViewController);
+			ChangeContentView (contentViewController);
 
-			AttachSidebarControllerToRootController(rootViewController);
+			AttachSidebarControllerToRootController (rootViewController);
 		}
 
 
@@ -83,15 +85,15 @@ namespace SidebarNavigation
 		public UIViewController MenuAreaController { get { return _sidebar.MenuViewController; } }
 
 
-        /// <summary>
+		/// <summary>
 		/// Determines the percent of width to complete slide action.
 		/// </summary>
 		public float FlingPercentage {
 			get { return _sidebar.FlingPercentage; }
 			set { _sidebar.FlingPercentage = value; }
 		}
-			
-        /// <summary>
+
+		/// <summary>
 		/// Determines the minimum velocity considered a "fling" to complete slide action.
 		/// </summary>
 		public float FlingVelocity {
@@ -151,16 +153,14 @@ namespace SidebarNavigation
 		/// Gets the current state of the menu.
 		/// Setting this property will open/close the menu respectively.
 		/// </summary>
-		public bool IsOpen
-		{
+		public bool IsOpen {
 			get { return _sidebar.IsOpen; }
-			set
-			{
+			set {
 				_sidebar.IsOpen = value;
 				if (_sidebar.IsOpen)
-					CloseMenu();
+					CloseMenu ();
 				else
-					OpenMenu();
+					OpenMenu ();
 			}
 		}
 
@@ -168,120 +168,122 @@ namespace SidebarNavigation
 		/// <summary>
 		/// Toggles the menu open or closed.
 		/// </summary>
-		public void ToggleMenu()
+		public void ToggleMenu ()
 		{
 			if (IsOpen)
-				_sidebar.CloseMenu();
+				_sidebar.CloseMenu ();
 			else
-				_sidebar.OpenMenu();
+				_sidebar.OpenMenu ();
 		}
 
 		/// <summary>
 		/// Shows the slideout navigation menu.
 		/// </summary>
-		public void OpenMenu()
+		public void OpenMenu ()
 		{
-			_sidebar.OpenMenu();
+			_sidebar.OpenMenu ();
 		}
 
 		/// <summary>
 		/// Hides the slideout navigation menu.
 		/// </summary>
-		public void CloseMenu(bool animate = true)
+		public void CloseMenu (bool animate = true)
 		{
-			_sidebar.CloseMenu(animate);
+			_sidebar.CloseMenu (animate);
 		}
-			
+
 		/// <summary>
 		/// Replaces the content area view controller with the specified view controller.
 		/// </summary>
 		/// <param name="newContentView">
 		/// New content view.
 		/// </param>
-		public void ChangeContentView(UIViewController newContentView) {
-			_sidebar.ChangeContentView(newContentView);
-			AddContentViewToSidebar();
-			CloseMenu();
+		public void ChangeContentView (UIViewController newContentView)
+		{
+			_sidebar.ChangeContentView (newContentView);
+			AddContentViewToSidebar ();
+			CloseMenu ();
 		}
-			
+
 		/// <summary>
 		/// Replaces the menu area view controller with the specified view controller.
 		/// </summary>
 		/// <param name="newMenuView">
 		/// New menu view.
 		/// </param>
-		public void ChangeMenuView(UIViewController newMenuView) {
-			_sidebar.ChangeMenuView(newMenuView);
-			AddMenuViewToSidebar();
-		}
-
-
-		private void AddContentViewToSidebar()
+		public void ChangeMenuView (UIViewController newMenuView)
 		{
-			
-			SetContentViewBounds();
-			SetContentViewPosition();
-			View.AddSubview(ContentAreaController.View);
-			AddChildViewController(ContentAreaController);
+			_sidebar.ChangeMenuView (newMenuView);
+			AddMenuViewToSidebar ();
 		}
-			
-		private void SetContentViewBounds()
+
+		private void AddContentViewToSidebar ()
+		{
+			SetContentViewBounds ();
+			SetContentViewPosition ();
+			View.AddSubview (ContentAreaController.View);
+			AddChildViewController (ContentAreaController);
+		}
+
+		private void SetContentViewBounds ()
 		{
 			var sidebarBounds = View.Bounds;
-			if (ContentAreaController.View.Bounds.Equals(sidebarBounds))
+			if (ContentAreaController.View.Bounds.Equals (sidebarBounds))
 				return;
 			ContentAreaController.View.Bounds = sidebarBounds;
 		}
 
-		private void SetContentViewPosition()
+		private void SetContentViewPosition ()
 		{
 			var sidebarBounds = View.Bounds;
 			if (IsOpen)
 				sidebarBounds.X = MenuWidth;
-			ContentAreaController.View.Layer.AnchorPoint = new PointF(.5f, .5f);
-			if (ContentAreaController.View.Frame.Location.Equals(sidebarBounds.Location))
+			ContentAreaController.View.Layer.AnchorPoint = new PointF (.5f, .5f);
+			if (ContentAreaController.View.Frame.Location.Equals (sidebarBounds.Location))
 				return;
-			var sidebarCenter = new PointF(sidebarBounds.Left + sidebarBounds.Width / 2, sidebarBounds.Top + sidebarBounds.Height / 2);
+			var sidebarCenter = new PointF (sidebarBounds.Left + sidebarBounds.Width / 2, sidebarBounds.Top + sidebarBounds.Height / 2);
 			ContentAreaController.View.Center = sidebarCenter;
 		}
-			
-		private void AddMenuViewToSidebar()
+
+		private void AddMenuViewToSidebar ()
 		{
-			SetMenuViewPosition();
-			View.AddSubview(MenuAreaController.View);
-			View.SendSubviewToBack(MenuAreaController.View);
+			SetMenuViewPosition ();
+			View.AddSubview (MenuAreaController.View);
+			View.SendSubviewToBack (MenuAreaController.View);
 		}
 
-		private void SetMenuViewPosition() {
+		private void SetMenuViewPosition ()
+		{
 			var menuFrame = MenuAreaController.View.Frame;
 			menuFrame.X = MenuLocation == MenuLocations.Left ? 0 : View.Frame.Width - MenuWidth;
 			menuFrame.Width = MenuWidth;
 			MenuAreaController.View.Frame = menuFrame;
 		}
 
-		private void AttachSidebarControllerToRootController(UIViewController rootViewController) {
-			rootViewController.AddChildViewController(this);
-			rootViewController.View.AddSubview(this.View);
-			this.DidMoveToParentViewController(rootViewController);
+		private void AttachSidebarControllerToRootController (UIViewController rootViewController)
+		{
+			rootViewController.AddChildViewController (this);
+			rootViewController.View.AddSubview (this.View);
+			this.DidMoveToParentViewController (rootViewController);
 		}
 
 
 		/// <summary>
 		/// Ensures that the menu view gets properly positioned.
 		/// </summary>
-		public override void ViewDidLayoutSubviews()
+		public override void ViewDidLayoutSubviews ()
 		{
-			base.ViewDidLayoutSubviews();
-			SetMenuViewPosition();
+			base.ViewDidLayoutSubviews ();
+			SetMenuViewPosition ();
 		}
 
 		/// <summary>
 		/// Ensures that the menu view gets properly positioned.
 		/// </summary>
-		public override void ViewWillAppear(bool animated)
+		public override void ViewWillAppear (bool animated)
 		{
-			View.SetNeedsLayout();
-			base.ViewWillAppear(animated);
+			View.SetNeedsLayout ();
+			base.ViewWillAppear (animated);
 		}
 
 
@@ -290,22 +292,22 @@ namespace SidebarNavigation
 		/// <summary>
 		/// Overridden to handle reopening the menu after rotation.
 		/// </summary>
-		public override void WillRotate(UIInterfaceOrientation toInterfaceOrientation, double duration)
+		public override void WillRotate (UIInterfaceOrientation toInterfaceOrientation, double duration)
 		{
-			base.WillRotate(toInterfaceOrientation, duration);
+			base.WillRotate (toInterfaceOrientation, duration);
 			if (IsOpen)
 				_openWhenRotated = true;
-			_sidebar.CloseMenu(false);
+			_sidebar.CloseMenu (false);
 		}
 
 		/// <summary>
 		/// Overridden to handle reopening the menu after rotation.
 		/// </summary>
-		public override void DidRotate(UIInterfaceOrientation fromInterfaceOrientation)
+		public override void DidRotate (UIInterfaceOrientation fromInterfaceOrientation)
 		{
-			base.DidRotate(fromInterfaceOrientation);
+			base.DidRotate (fromInterfaceOrientation);
 			if (_openWhenRotated && ReopenOnRotate)
-				_sidebar.OpenMenu();
+				_sidebar.OpenMenu ();
 			_openWhenRotated = false;
 		}
 	}
